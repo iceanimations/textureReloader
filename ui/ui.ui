@@ -6,35 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>644</width>
-    <height>357</height>
+    <width>550</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Texture Reloader</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="recheckButton">
-       <property name="text">
-        <string>Recheck</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="clearButton">
-       <property name="text">
-        <string>Clear</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
@@ -76,8 +55,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>624</width>
-        <height>207</height>
+        <width>530</width>
+        <height>314</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="texturesBoxLayout">
@@ -89,19 +68,35 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="messageLabel">
-     <property name="styleSheet">
-      <string>color: lightGreen</string>
-     </property>
-     <property name="text">
-      <string>Done reloading of textures...</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QLabel" name="messageLabel">
+       <property name="styleSheet">
+        <string>color: lightGreen</string>
+       </property>
+       <property name="text">
+        <string>Done reloading of textures...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QPushButton" name="reloadButton">
+       <property name="toolTip">
+        <string>Reload the textures from specified directories</string>
+       </property>
        <property name="text">
         <string>Reload</string>
        </property>
@@ -114,7 +109,33 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="recheckButton">
+       <property name="toolTip">
+        <string>Relist the textures used in current scene</string>
+       </property>
+       <property name="text">
+        <string>Recheck</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="clearButton">
+       <property name="toolTip">
+        <string>Clear the window</string>
+       </property>
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="closeButton">
+       <property name="toolTip">
+        <string>Close Texture Reloader</string>
+       </property>
        <property name="text">
         <string>Close</string>
        </property>
