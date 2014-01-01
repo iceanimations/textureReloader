@@ -110,14 +110,8 @@
      </item>
      <item>
       <widget class="QPushButton" name="recheckButton">
-       <property name="toolTip">
-        <string>Relist the textures used in current scene</string>
-       </property>
        <property name="text">
         <string>Recheck</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
        </property>
       </widget>
      </item>
