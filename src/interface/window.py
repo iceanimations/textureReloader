@@ -4,13 +4,15 @@ Created on Sep 11, 2013
 @author: qurban.ali
 '''
 import os.path as osp
+import sys
 import site
-site.addsitedir(r"R:\Python_Scripts")
+site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
+import uiContainer
+from uiContainer import uic
 from PyQt4.QtGui import *
-from PyQt4 import uic
 site.addsitedir(r"R:\Pipe_Repo\Users\Hussain\packages")
 import qtify_maya_window as util
-import sys
+reload(util)
 modulePath = sys.modules[__name__].__file__
 root = osp.dirname(osp.dirname(osp.dirname(modulePath)))
 from ..logic import logic
