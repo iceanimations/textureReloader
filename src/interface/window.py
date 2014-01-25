@@ -6,9 +6,11 @@ Created on Sep 11, 2013
 import os.path as osp
 import sys
 import site
+
+# add PyQt/PySide to sys.modules
 site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
-import uiContainer
 from uiContainer import uic
+
 from PyQt4.QtGui import *
 site.addsitedir(r"R:\Pipe_Repo\Users\Hussain\packages")
 import qtify_maya_window as util
