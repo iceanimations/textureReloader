@@ -1,3 +1,4 @@
 import src
-import src.interface.window as window
+import src.window as window
 reload(window)
+Window = window.Window

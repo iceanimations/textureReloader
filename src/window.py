@@ -97,25 +97,24 @@ class Window(Form, Base):
                     for nod in self.reloadMappings[box]:
                         nod.fileTextureName.set('')
                     continue
-                path = osp.normpath(path)
-                if osp.exists(path):
-                    for node in self.reloadMappings[box]:
-                        baseName = osp.basename(node.fileTextureName.get())
-                        tempName = osp.splitext(baseName)[0] +'.png'
+                #if osp.exists(path):
+                for node in self.reloadMappings[box]:
+                    baseName = osp.basename(node.fileTextureName.get())
+                    tempName = osp.splitext(baseName)[0] +'.png'
+                    if not osp.exists(osp.join(path, tempName)):
+                        tempName = osp.splitext(tempName)[0] +'.tga'
                         if not osp.exists(osp.join(path, tempName)):
-                            tempName = osp.splitext(tempName)[0] +'.tga'
+                            tempName = osp.splitext(tempName)[0] +'.tx'
                             if not osp.exists(osp.join(path, tempName)):
-                                tempName = osp.splitext(tempName)[0] +'.tx'
-                                if not osp.exists(osp.join(path, tempName)):
-                                    pass
-                                else: baseName = tempName
+                                pass
                             else: baseName = tempName
                         else: baseName = tempName
-                        fullPath = osp.join(path, baseName)
-                        if osp.exists(fullPath):
-                            node.fileTextureName.set(fullPath)
-                        else: self.badTextures.append(fullPath)
-                else: self.badTextures.append(path)
+                    else: baseName = tempName
+                    fullPath = osp.join(path, baseName)
+                    #if osp.exists(fullPath):
+                    node.fileTextureName.set(fullPath)
+                    #else: self.badTextures.append(fullPath)
+                #else: self.badTextures.append(path)
             if self.badTextures:
                 detail = 'Following files not found in the specified directories:\n'
                 for i in range(len(self.badTextures)):
