@@ -6,18 +6,15 @@ Created on Sep 11, 2013
 import os.path as osp
 import sys
 import site
-
+import webbrowser
 # add PyQt/PySide to sys.modules
 site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
 from uiContainer import uic
-
 from PyQt4.QtGui import *
-site.addsitedir(r"R:\Pipe_Repo\Users\Hussain\packages")
 import qtify_maya_window as util
-reload(util)
-modulePath = sys.modules[__name__].__file__
-root = osp.dirname(osp.dirname(osp.dirname(modulePath)))
-from ..logic import logic
+modulePath = __file__
+root = osp.dirname(osp.dirname(modulePath))
+import pymel.core as pc
  
 Form, Base = uic.loadUiType('%s\ui\ui.ui'%root)
 class Window(Form, Base):
@@ -26,55 +23,80 @@ class Window(Form, Base):
         self.setupUi(self)
         self.reloadButton.clicked.connect(self.reloadTextures)
         self.closeButton.clicked.connect(self.close)
-        self.recheckButton.clicked.connect(self.recheck)
+        self.refreshButton.clicked.connect(self.refresh)
         self.clearButton.clicked.connect(self.clear)
+        self.helpButton.clicked.connect(self.showHelp)
+        self.helpButton.hide()
         self.reloadMappings = {}
-        self.textureMappings = {}
-        self.badTextures = []
-        self.recheck()
+        self.boxComboMappings = {}
+        self.listBoxes()
         
         # update the database, how many times this app is used
         site.addsitedir(r'r:/pipe_repo/users/qurban')
         import appUsageApp
         appUsageApp.updateDatabase('textureReloader')
         
-    def recheck(self):
+    def showHelp(self):
+        webbrowser.open_new_tab(r'R:\Pipe_Repo\Users\Qurban\docs\textureReloader\help.html')
+        
+    def closeEvent(self, event):
+        self.deleteLater()
+        
+    def hideEvent(self, event):
+        self.close()
+        
+    def listBoxes(self):
         self.clear()
-        fileNodes = logic.objects('file')
+        fileNodes = pc.ls(type=['file', 'aiImage'])
+        textureMappings = {}
         if not fileNodes:
             self.msgBox(msg = 'No texture found in the Scene',
                         icon = QMessageBox.Information)
             return
         self.availableLabel.setText('Available Textures: '+ str(len(fileNodes)))
-        emptyTextures = [x for x in fileNodes if not x.fileTextureName.get()]
+        emptyTextures = [x for x in fileNodes if not self.getFile(x)]
         reloadableTextures = [x for x in fileNodes if x not in emptyTextures]
         self.emptyLabel.setText('Empty Textures: '+ str(len(emptyTextures)))
         for node in reloadableTextures:
-            key = osp.dirname(node.fileTextureName.get())
+            key = osp.dirname(self.getFile(node))
             key = osp.normpath(key)
-            if self.textureMappings.has_key(key):
-                self.textureMappings[key].append(node)
-            else: self.textureMappings[key] = [node]
-        for path in self.textureMappings:
+            if textureMappings.has_key(key):
+                textureMappings[key].append(node)
+            else: textureMappings[key] = [node]
+        for path in textureMappings:
             textureFrame = QFrame(self)
             lay = QHBoxLayout(textureFrame)
             textureFrame.setLayout(lay)
-            pathBox = QLineEdit(self)
-            self.reloadMappings[pathBox] = self.textureMappings[path]
-            label = QLabel(textureFrame)
+            pathBox = QLineEdit(textureFrame)
+            self.reloadMappings[pathBox] = textureMappings[path]
+            comboBox = QComboBox(textureFrame)
+            comboBox.setFixedWidth(100)
             lay.addWidget(pathBox)
-            lay.addWidget(label)
+            lay.addWidget(comboBox)
             self.texturesBoxLayout.addWidget(textureFrame)
             pathBox.setText(path)
-            label.setText(str(len(self.textureMappings[path])) +' Textures')
+            comboBox.addItem(str(len(textureMappings[path])) +' Textures')
+            comboBox.addItems([osp.basename(self.getFile(x)) for x in textureMappings[path]])
+            self.boxComboMappings[pathBox] = comboBox
         self.messageLabel.hide()
-            
-    def pathChanged(self, path):
-        print path
-#        if not osp.exists(osp.normpath(path)):
-#            pathBox.setStyleSheet("border: 2px solid red;")
-#        else: pathBox.setStyleSheet("border: 0px;")
+        map(lambda box: self.bindReturnPressedEvent(box), self.reloadMappings.keys())
         
+    def refresh(self):
+        self.listBoxes()
+        
+    def getFile(self, node):
+        if type(node) == pc.nt.AiImage:
+            return node.filename.get()
+        return node.fileTextureName.get()
+    
+    def setFile(self, node, name):
+        if type(node) == pc.nt.AiImage:
+            node.filename.set(name)
+            return
+        node.fileTextureName.set(name)
+        
+    def bindReturnPressedEvent(self, box):
+        box.returnPressed.connect(lambda: self.reloadSingleBox(box))
     
     def clear(self):
         self.availableLabel.setText('Available Textures: 0')
@@ -82,53 +104,57 @@ class Window(Form, Base):
         for box in self.reloadMappings:
             box.parent().deleteLater()
         self.reloadMappings.clear()
-        self.textureMappings.clear()
-        self.badTextures[:] = []
+        self.boxComboMappings.clear()
         self.messageLabel.hide()
         
     def reloadTextures(self):
         if self.reloadMappings:
+            badTextures = []
             self.messageLabel.show()
             self.messageLabel.setText('Reloading textures...')
             self.messageLabel.repaint()
             for box in self.reloadMappings:
-                path = str(box.text())
-                if not path:
-                    for nod in self.reloadMappings[box]:
-                        nod.fileTextureName.set('')
-                    continue
-                #if osp.exists(path):
-                for node in self.reloadMappings[box]:
-                    baseName = osp.basename(node.fileTextureName.get())
-                    tempName = osp.splitext(baseName)[0] +'.png'
-                    if not osp.exists(osp.join(path, tempName)):
-                        tempName = osp.splitext(tempName)[0] +'.tga'
-                        if not osp.exists(osp.join(path, tempName)):
-                            tempName = osp.splitext(tempName)[0] +'.tx'
-                            if not osp.exists(osp.join(path, tempName)):
-                                pass
-                            else: baseName = tempName
-                        else: baseName = tempName
-                    else: baseName = tempName
-                    fullPath = osp.join(path, baseName)
-                    #if osp.exists(fullPath):
-                    node.fileTextureName.set(fullPath)
-                    #else: self.badTextures.append(fullPath)
-                #else: self.badTextures.append(path)
-            if self.badTextures:
-                detail = 'Following files not found in the specified directories:\n'
-                for i in range(len(self.badTextures)):
-                    detail += str(i+1) + "- " + self.badTextures[i] + "\n"
-                self.msgBox(msg = "Files not found in the specified directory",
+                badTextures.extend(self.reloadSingleBox(box, msg=False))
+            if badTextures:
+                detail = 'Following paths do not exist:\n'
+                for i in range(len(badTextures)):
+                    detail += str(i+1) + "- " + badTextures[i] + "\n"
+                self.msgBox(msg = "The system can find the path specified",
                             details = detail, icon = QMessageBox.Information)
-            self.recheck()
+            self.refresh()
             self.messageLabel.setText('Done reloading textures...')
             self.messageLabel.show()
             self.messageLabel.repaint()
             
-    def folderDialog(self):
-        folder = QFileDialog.getExistingDirectory(self, 'Texture Directory',
-                                                  '', QFileDialog.ShowDirsOnly)
+    def reloadSingleBox(self, box, msg=True):
+        badTextures = []
+        path = str(box.text())
+        if not path:
+            for nod in self.reloadMappings[box]:
+                self.setFile(nod, '')
+            return
+        if osp.exists(path):
+            for node in self.reloadMappings[box]:
+                baseName = osp.basename(self.getFile(node))
+                fullPath = osp.join(path, baseName)
+                flag = True
+                if not osp.exists(fullPath):
+                    flag = False
+                    if '<udim>' in baseName:
+                        flag = True
+                if flag:
+                    self.setFile(node, fullPath)
+                else:
+                    badTextures.append(fullPath)
+        else: badTextures.append(path)
+        if msg:
+            if badTextures:
+                paths = '\n'.join(badTextures)
+                self.msgBox(msg='The system can not find the path specified\n'+ paths, icon=QMessageBox.Warning)
+            self.refresh()
+            self.messageLabel.show()
+        else:
+            return badTextures
         
     def msgBox(self, msg = None, btns = QMessageBox.Ok,
            icon = None, ques = None, details = None):
@@ -152,4 +178,13 @@ class Window(Form, Base):
             mBox.setStandardButtons(btns)
             buttonPressed = mBox.exec_()
             return buttonPressed
+
+        
+'''
+TODO:
+reload only single box when return pressed
+show comboBox for filenames
+support for aiImage node
+create docs
+'''
         

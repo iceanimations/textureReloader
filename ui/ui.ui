@@ -17,6 +17,26 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="QPushButton" name="helpButton">
+       <property name="text">
+        <string>Help</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QLabel" name="availableLabel">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -55,14 +75,37 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>530</width>
-        <height>314</height>
+        <width>528</width>
+        <height>297</height>
        </rect>
       </property>
-      <layout class="QVBoxLayout" name="texturesBoxLayout">
+      <layout class="QVBoxLayout" name="tgrfghhfg">
        <property name="spacing">
         <number>2</number>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="texturesBoxLayout"/>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -75,7 +118,7 @@
         <string>color: lightGreen</string>
        </property>
        <property name="text">
-        <string>Done reloading of textures...</string>
+        <string>Done reloading textures...</string>
        </property>
       </widget>
      </item>
@@ -94,6 +137,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="reloadButton">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Reload the textures from specified directories</string>
        </property>
@@ -104,34 +153,64 @@
         <bool>false</bool>
        </property>
        <property name="default">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="recheckButton">
+      <widget class="QPushButton" name="refreshButton">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Relist the textures from scene</string>
+       </property>
        <property name="text">
-        <string>Recheck</string>
+        <string>Refresh</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="clearButton">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Clear the window</string>
        </property>
        <property name="text">
         <string>Clear</string>
        </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="closeButton">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Close Texture Reloader</string>
        </property>
        <property name="text">
         <string>Close</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
