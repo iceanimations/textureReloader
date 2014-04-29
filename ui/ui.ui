@@ -11,9 +11,19 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Texture Reloader</string>
+   <string>Texture Reloader (v1.1)</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="heyLabel">
+     <property name="styleSheet">
+      <string>color: lightgreen;</string>
+     </property>
+     <property name="text">
+      <string>Hey! Texture Reloader has been improved! Press Help to go through the release notes</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
@@ -76,7 +86,7 @@
         <x>0</x>
         <y>0</y>
         <width>528</width>
-        <height>297</height>
+        <height>279</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="tgrfghhfg">

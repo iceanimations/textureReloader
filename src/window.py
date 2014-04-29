@@ -26,10 +26,12 @@ class Window(Form, Base):
         self.refreshButton.clicked.connect(self.refresh)
         self.clearButton.clicked.connect(self.clear)
         self.helpButton.clicked.connect(self.showHelp)
-        self.helpButton.hide()
         self.reloadMappings = {}
         self.boxComboMappings = {}
         self.listBoxes()
+
+        if pc.optionVar(exists='releaseNotes'):
+            self.heyLabel.hide()
         
         # update the database, how many times this app is used
         site.addsitedir(r'r:/pipe_repo/users/qurban')
@@ -38,6 +40,8 @@ class Window(Form, Base):
         
     def showHelp(self):
         webbrowser.open_new_tab(r'R:\Pipe_Repo\Users\Qurban\docs\textureReloader\help.html')
+        pc.optionVar(iv=('releaseNotes', 1))
+        self.heyLabel.hide()
         
     def closeEvent(self, event):
         self.deleteLater()
@@ -177,14 +181,4 @@ class Window(Form, Base):
                 mBox.setDetailedText(details)
             mBox.setStandardButtons(btns)
             buttonPressed = mBox.exec_()
-            return buttonPressed
-
-        
-'''
-TODO:
-reload only single box when return pressed
-show comboBox for filenames
-support for aiImage node
-create docs
-'''
-        
+            return buttonPressed      
