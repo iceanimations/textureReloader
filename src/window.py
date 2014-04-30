@@ -81,7 +81,8 @@ class Window(Form, Base):
             lay.addWidget(comboBox)
             self.texturesBoxLayout.addWidget(textureFrame)
             pathBox.setText(path)
-            comboBox.addItem(str(len(textureMappings[path])) +' Textures')
+            num = len(textureMappings[path])
+            comboBox.addItem(str(num) + (' Textures' if num > 1 else ' Texture'))
             comboBox.addItems([osp.basename(self.getFile(x)) for x in textureMappings[path]])
             self.boxComboMappings[pathBox] = comboBox
         self.messageLabel.hide()
