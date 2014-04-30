@@ -4,6 +4,7 @@ Created on Sep 11, 2013
 @author: qurban.ali
 '''
 import os.path as osp
+import os
 import sys
 import site
 import webbrowser
@@ -11,6 +12,7 @@ import webbrowser
 site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
 from uiContainer import uic
 from PyQt4.QtGui import *
+from PyQt4.QtCore import QRegExp
 import qtify_maya_window as util
 modulePath = __file__
 root = osp.dirname(osp.dirname(modulePath))
@@ -145,7 +147,7 @@ class Window(Form, Base):
                 if not osp.exists(fullPath):
                     flag = False
                     if '<udim>' in baseName:
-                        flag = True
+                        flag = self.checkUDIM(path, baseName)
                 if flag:
                     self.setFile(node, fullPath)
                 else:
@@ -159,6 +161,17 @@ class Window(Form, Base):
             self.messageLabel.show()
         else:
             return badTextures
+        
+    def checkUDIM(self, path, basename):
+        pattern = '^'+ basename.replace('<udim>', '\d+') +'$'
+        regex = QRegExp(pattern)
+        flag = False
+        for phile in os.listdir(path):
+            if osp.isfile(osp.join(path, phile)):
+                if regex.indexIn(phile) == 0:
+                    flag = True
+                    break
+        return flag
         
     def msgBox(self, msg = None, btns = QMessageBox.Ok,
            icon = None, ques = None, details = None):
