@@ -12,7 +12,7 @@ import webbrowser
 site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
 from uiContainer import uic
 from PyQt4.QtGui import *
-from PyQt4.QtCore import QRegExp
+from PyQt4.QtCore import QRegExp, Qt
 import qtify_maya_window as util
 modulePath = __file__
 root = osp.dirname(osp.dirname(modulePath))
@@ -84,6 +84,9 @@ class Window(Form, Base):
             num = len(textureMappings[path])
             comboBox.addItem(str(num) + (' Textures' if num > 1 else ' Texture'))
             comboBox.addItems([osp.basename(self.getFile(x)) for x in textureMappings[path]])
+            comboBox.view().setFixedWidth(comboBox.sizeHint().width())
+            comboBox.view().setAttribute(Qt.WA_Disabled, True)
+            comboBox.view().setAttribute(Qt.WA_MouseTracking, False)
             self.boxComboMappings[pathBox] = comboBox
         self.messageLabel.hide()
         map(lambda box: self.bindReturnPressedEvent(box), self.reloadMappings.keys())
