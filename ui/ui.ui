@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Texture Reloader (v1.1)</string>
+   <string>Texture Reloader (v1.2)</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -85,8 +85,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>528</width>
-        <height>279</height>
+        <width>530</width>
+        <height>287</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="tgrfghhfg">

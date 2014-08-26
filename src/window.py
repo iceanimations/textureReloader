@@ -8,7 +8,7 @@ import os
 import sys
 import site
 import webbrowser
-# add PyQt/PySide to sys.modules
+import subprocess
 site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
 from uiContainer import uic
 from PyQt4.QtGui import *
@@ -27,6 +27,7 @@ class Window(Form, Base):
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.refresh)
         self.clearButton.clicked.connect(self.clear)
+        self.clearButton.hide()
         self.helpButton.clicked.connect(self.showHelp)
         self.reloadMappings = {}
         self.boxComboMappings = {}
@@ -48,9 +49,6 @@ class Window(Form, Base):
     def closeEvent(self, event):
         self.deleteLater()
         
-    def hideEvent(self, event):
-        self.close()
-        
     def listBoxes(self):
         self.clear()
         fileNodes = pc.ls(type=['file', 'aiImage'])
@@ -69,6 +67,7 @@ class Window(Form, Base):
             if textureMappings.has_key(key):
                 textureMappings[key].append(node)
             else: textureMappings[key] = [node]
+        toolButtons = []
         for path in textureMappings:
             textureFrame = QFrame(self)
             lay = QHBoxLayout(textureFrame)
@@ -77,19 +76,42 @@ class Window(Form, Base):
             self.reloadMappings[pathBox] = textureMappings[path]
             comboBox = QComboBox(textureFrame)
             comboBox.setFixedWidth(100)
+            toolButton = QToolButton(textureFrame)
+            toolButton.setText('...')
+            toolButton.setObjectName(path)
+            toolButtons.append(toolButton)
+            lay.addWidget(toolButton)
             lay.addWidget(pathBox)
             lay.addWidget(comboBox)
             self.texturesBoxLayout.addWidget(textureFrame)
             pathBox.setText(path)
             num = len(textureMappings[path])
             comboBox.addItem(str(num) + (' Textures' if num > 1 else ' Texture'))
-            comboBox.addItems([osp.basename(self.getFile(x)) for x in textureMappings[path]])
+            count = 1
+            for x in textureMappings[path]:
+                texturePath = self.getFile(x)
+                comboBox.addItem(osp.basename(texturePath))
+                if not osp.exists(texturePath):
+                    comboBox.setItemData(count,
+                                         QColor(Qt.green), Qt.BackgroundRole)
+                count += 1
             comboBox.view().setFixedWidth(comboBox.sizeHint().width())
             comboBox.view().setAttribute(Qt.WA_Disabled, True)
             comboBox.view().setAttribute(Qt.WA_MouseTracking, False)
             self.boxComboMappings[pathBox] = comboBox
         self.messageLabel.hide()
+        map(lambda btn: self.bindOpenExplorer(btn), toolButtons)
         map(lambda box: self.bindReturnPressedEvent(box), self.reloadMappings.keys())
+        
+    def bindOpenExplorer(self, btn):
+        btn.clicked.connect(lambda: self.openExplorer(str(btn.objectName())))
+    
+    def openExplorer(self, path):
+        if not osp.exists(path):
+            self.msgBox('Corresponding path does not exist',
+                        icon=QMessageBox.Information)
+            return
+        subprocess.call('explorer %s'%path, shell=True)
         
     def refresh(self):
         self.listBoxes()
@@ -198,4 +220,4 @@ class Window(Form, Base):
                 mBox.setDetailedText(details)
             mBox.setStandardButtons(btns)
             buttonPressed = mBox.exec_()
-            return buttonPressed      
+            return buttonPressed
