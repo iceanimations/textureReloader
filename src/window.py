@@ -92,6 +92,9 @@ class Window(Form, Base):
                 texturePath = self.getFile(x)
                 comboBox.addItem(osp.basename(texturePath))
                 if not osp.exists(texturePath):
+                    if '<udim>' in texturePath.lower():
+                        if self.checkUDIM(osp.dirname(texturePath), osp.basename(texturePath)):
+                            continue
                     comboBox.setItemData(count,
                                          QColor(Qt.green), Qt.BackgroundRole)
                 count += 1
@@ -172,7 +175,7 @@ class Window(Form, Base):
                 flag = True
                 if not osp.exists(fullPath):
                     flag = False
-                    if '<udim>' in baseName:
+                    if '<udim>' in baseName.lower():
                         flag = self.checkUDIM(path, baseName)
                 if flag:
                     self.setFile(node, fullPath)
@@ -189,12 +192,12 @@ class Window(Form, Base):
             return badTextures
         
     def checkUDIM(self, path, basename):
-        pattern = '^'+ basename.replace('<udim>', '\d+') +'$'
+        pattern = '^'+ basename.replace('<udim>', '\d+').replace('UDIM', '') +'$'
         regex = QRegExp(pattern)
         flag = False
         for phile in os.listdir(path):
             if osp.isfile(osp.join(path, phile)):
-                if regex.indexIn(phile) == 0:
+                if regex.indexIn(phile) >= 0:
                     flag = True
                     break
         return flag
