@@ -93,6 +93,7 @@ class Window(Form, Base):
                 comboBox.addItem(osp.basename(texturePath))
                 if not osp.exists(texturePath):
                     if '<udim>' in texturePath.lower():
+                        
                         if self.checkUDIM(osp.dirname(texturePath), osp.basename(texturePath)):
                             continue
                     comboBox.setItemData(count,
@@ -192,6 +193,8 @@ class Window(Form, Base):
             return badTextures
         
     def checkUDIM(self, path, basename):
+        if not osp.exists(path):
+            return False
         pattern = '^'+ basename.replace('<udim>', '\d+').replace('UDIM', '') +'$'
         regex = QRegExp(pattern)
         flag = False
