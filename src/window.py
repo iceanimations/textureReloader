@@ -195,7 +195,7 @@ class Window(Form, Base):
     def checkUDIM(self, path, basename):
         if not osp.exists(path):
             return False
-        pattern = '^'+ basename.replace('<udim>', '\d+').replace('UDIM', '') +'$'
+        pattern = '^'+ basename.replace('<udim>', '\d+').replace('<UDIM>', '\d+') +'$'
         regex = QRegExp(pattern)
         flag = False
         for phile in os.listdir(path):
