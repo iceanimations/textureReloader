@@ -121,14 +121,14 @@ class Window(Form, Base):
         self.listBoxes()
         
     def getFile(self, node):
-        if type(node) == pc.nt.AiImage:
-            return node.filename.get()
+        #if type(node) == pc.nt.AiImage:
+            #return node.filename.get()
         return node.fileTextureName.get()
     
     def setFile(self, node, name):
-        if type(node) == pc.nt.AiImage:
-            node.filename.set(name)
-            return
+        #if type(node) == pc.nt.AiImage:
+            #node.filename.set(name)
+            #return
         node.fileTextureName.set(name)
         
     def bindReturnPressedEvent(self, box):
