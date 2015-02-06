@@ -51,7 +51,7 @@ class Window(Form, Base):
         
     def listBoxes(self):
         self.clear()
-        fileNodes = pc.ls(type=['file', 'aiImage'])
+        fileNodes = pc.ls(type='file')
         textureMappings = {}
         if not fileNodes:
             self.msgBox(msg = 'No texture found in the Scene',
