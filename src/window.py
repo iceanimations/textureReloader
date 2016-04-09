@@ -1,6 +1,5 @@
 '''
 Created on Sep 11, 2013
-
 @author: qurban.ali
 '''
 import os.path as osp
@@ -9,14 +8,14 @@ import sys
 import site
 import webbrowser
 import subprocess
-site.addsitedir(r"R:\Pipe_Repo\Users\Qurban\utilities")
 from uiContainer import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QRegExp, Qt
 import qtify_maya_window as util
-modulePath = __file__
-root = osp.dirname(osp.dirname(modulePath))
 import pymel.core as pc
+import cui
+
+root = osp.dirname(osp.dirname(__file__))
  
 Form, Base = uic.loadUiType('%s\ui\ui.ui'%root)
 class Window(Form, Base):
@@ -49,12 +48,15 @@ class Window(Form, Base):
     def closeEvent(self, event):
         self.deleteLater()
         
+    def showMessage(self, **kwargs):
+        return cui.showMessage(self, title='Texture Reloader', **kwargs)
+        
     def listBoxes(self):
         self.clear()
         fileNodes = pc.ls(type=['file', 'aiImage'])
         textureMappings = {}
         if not fileNodes:
-            self.msgBox(msg = 'No texture found in the Scene',
+            self.showMessage(msg = 'No texture found in the Scene',
                         icon = QMessageBox.Information)
             return
         self.availableLabel.setText('Available Textures: '+ str(len(fileNodes)))
@@ -112,7 +114,7 @@ class Window(Form, Base):
     
     def openExplorer(self, path):
         if not osp.exists(path):
-            self.msgBox('Corresponding path does not exist',
+            self.showMessage(msg='Corresponding path does not exist',
                         icon=QMessageBox.Information)
             return
         subprocess.call('explorer %s'%path, shell=True)
@@ -155,7 +157,7 @@ class Window(Form, Base):
                 detail = 'Following paths do not exist:\n'
                 for i in range(len(badTextures)):
                     detail += str(i+1) + "- " + badTextures[i] + "\n"
-                self.msgBox(msg = "The system can find the path specified",
+                self.showMessage(msg = "The system can find the path specified",
                             details = detail, icon = QMessageBox.Information)
             self.refresh()
             self.messageLabel.setText('Done reloading textures...')
@@ -186,7 +188,7 @@ class Window(Form, Base):
         if msg:
             if badTextures:
                 paths = '\n'.join(badTextures)
-                self.msgBox(msg='The system can not find the path specified\n'+ paths, icon=QMessageBox.Warning)
+                self.showMessage(msg='The system can not find the path specified\n'+ paths, icon=QMessageBox.Warning)
             self.refresh()
             self.messageLabel.show()
         else:
@@ -204,26 +206,3 @@ class Window(Form, Base):
                     flag = True
                     break
         return flag
-        
-    def msgBox(self, msg = None, btns = QMessageBox.Ok,
-           icon = None, ques = None, details = None):
-        '''
-        dispalys the warnings
-        @params:
-                args: a dictionary containing the following sequence of variables
-                {'msg': 'msg to be displayed'[, 'ques': 'question to be asked'],
-                'btns': QMessageBox.btn1 | QMessageBox.btn2 | ....}
-        '''
-        if msg:
-            mBox = QMessageBox(self)
-            mBox.setWindowTitle('TextureReloader')
-            mBox.setText(msg)
-            if ques:
-                mBox.setInformativeText(ques)
-            if icon:
-                mBox.setIcon(icon)
-            if details:
-                mBox.setDetailedText(details)
-            mBox.setStandardButtons(btns)
-            buttonPressed = mBox.exec_()
-            return buttonPressed
