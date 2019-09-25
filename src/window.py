@@ -131,7 +131,9 @@ class Window(Form, Base):
         #if type(node) == pc.nt.AiImage:
             #node.filename.set(name)
             #return
+        colorSpace = node.colorSpace.get()
         node.fileTextureName.set(name)
+        node.colorSpace.set(colorSpace)
         
     def bindReturnPressedEvent(self, box):
         box.returnPressed.connect(lambda: self.reloadSingleBox(box))
