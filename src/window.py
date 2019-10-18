@@ -16,10 +16,12 @@ import pymel.core as pc
 import cui
 
 root = osp.dirname(osp.dirname(__file__))
- 
-Form, Base = uic.loadUiType('%s\ui\ui.ui'%root)
+
+Form, Base = uic.loadUiType('%s\ui\ui.ui' % root)
+
+
 class Window(Form, Base):
-    def __init__(self, parent = util.getMayaWindow()):
+    def __init__(self, parent=util.getMayaWindow()):
         super(Window, self).__init__(parent)
         self.setupUi(self)
         self.reloadButton.clicked.connect(self.reloadTextures)
@@ -34,41 +36,44 @@ class Window(Form, Base):
 
         if pc.optionVar(exists='releaseNotes'):
             self.heyLabel.hide()
-        
+
         # update the database, how many times this app is used
         site.addsitedir(r'r:/pipe_repo/users/qurban')
         import appUsageApp
         appUsageApp.updateDatabase('textureReloader')
-        
+
     def showHelp(self):
-        webbrowser.open_new_tab(r'R:\Pipe_Repo\Users\Qurban\docs\textureReloader\help.html')
+        webbrowser.open_new_tab(
+            r'R:\Pipe_Repo\Users\Qurban\docs\textureReloader\help.html')
         pc.optionVar(iv=('releaseNotes', 1))
         self.heyLabel.hide()
-        
+
     def closeEvent(self, event):
         self.deleteLater()
-        
+
     def showMessage(self, **kwargs):
         return cui.showMessage(self, title='Texture Reloader', **kwargs)
-        
+
     def listBoxes(self):
         self.clear()
         fileNodes = pc.ls(type='file')
         textureMappings = {}
         if not fileNodes:
-            self.showMessage(msg = 'No texture found in the Scene',
-                        icon = QMessageBox.Information)
+            self.showMessage(msg='No texture found in the Scene',
+                             icon=QMessageBox.Information)
             return
-        self.availableLabel.setText('Available Textures: '+ str(len(fileNodes)))
+        self.availableLabel.setText('Available Textures: ' +
+                                    str(len(fileNodes)))
         emptyTextures = [x for x in fileNodes if not self.getFile(x)]
         reloadableTextures = [x for x in fileNodes if x not in emptyTextures]
-        self.emptyLabel.setText('Empty Textures: '+ str(len(emptyTextures)))
+        self.emptyLabel.setText('Empty Textures: ' + str(len(emptyTextures)))
         for node in reloadableTextures:
             key = osp.dirname(self.getFile(node))
             key = osp.normpath(key)
             if textureMappings.has_key(key):
                 textureMappings[key].append(node)
-            else: textureMappings[key] = [node]
+            else:
+                textureMappings[key] = [node]
         toolButtons = []
         for path in textureMappings:
             textureFrame = QFrame(self)
@@ -88,18 +93,19 @@ class Window(Form, Base):
             self.texturesBoxLayout.addWidget(textureFrame)
             pathBox.setText(path)
             num = len(textureMappings[path])
-            comboBox.addItem(str(num) + (' Textures' if num > 1 else ' Texture'))
+            comboBox.addItem(
+                str(num) + (' Textures' if num > 1 else ' Texture'))
             count = 1
             for x in textureMappings[path]:
                 texturePath = self.getFile(x)
                 comboBox.addItem(osp.basename(texturePath))
                 if not osp.exists(texturePath):
                     if '<udim>' in texturePath.lower():
-                        
-                        if self.checkUDIM(osp.dirname(texturePath), osp.basename(texturePath)):
+                        if self.checkUDIM(osp.dirname(texturePath),
+                                          osp.basename(texturePath)):
                             continue
-                    comboBox.setItemData(count,
-                                         QColor(Qt.green), Qt.BackgroundRole)
+                    comboBox.setItemData(count, QColor(Qt.green),
+                                         Qt.BackgroundRole)
                 count += 1
             comboBox.view().setFixedWidth(comboBox.sizeHint().width())
             comboBox.view().setAttribute(Qt.WA_Disabled, True)
@@ -107,37 +113,38 @@ class Window(Form, Base):
             self.boxComboMappings[pathBox] = comboBox
         self.messageLabel.hide()
         map(lambda btn: self.bindOpenExplorer(btn), toolButtons)
-        map(lambda box: self.bindReturnPressedEvent(box), self.reloadMappings.keys())
-        
+        map(lambda box: self.bindReturnPressedEvent(box),
+            self.reloadMappings.keys())
+
     def bindOpenExplorer(self, btn):
         btn.clicked.connect(lambda: self.openExplorer(str(btn.objectName())))
-    
+
     def openExplorer(self, path):
         if not osp.exists(path):
             self.showMessage(msg='Corresponding path does not exist',
-                        icon=QMessageBox.Information)
+                             icon=QMessageBox.Information)
             return
-        subprocess.call('explorer %s'%path, shell=True)
-        
+        subprocess.call('explorer %s' % path, shell=True)
+
     def refresh(self):
         self.listBoxes()
-        
+
     def getFile(self, node):
         #if type(node) == pc.nt.AiImage:
-            #return node.filename.get()
+        #return node.filename.get()
         return node.fileTextureName.get()
-    
+
     def setFile(self, node, name):
         #if type(node) == pc.nt.AiImage:
-            #node.filename.set(name)
-            #return
+        #node.filename.set(name)
+        #return
         colorSpace = node.colorSpace.get()
         node.fileTextureName.set(name)
         node.colorSpace.set(colorSpace)
-        
+
     def bindReturnPressedEvent(self, box):
         box.returnPressed.connect(lambda: self.reloadSingleBox(box))
-    
+
     def clear(self):
         self.availableLabel.setText('Available Textures: 0')
         self.emptyLabel.setText('Empty Textures: 0')
@@ -146,7 +153,7 @@ class Window(Form, Base):
         self.reloadMappings.clear()
         self.boxComboMappings.clear()
         self.messageLabel.hide()
-        
+
     def reloadTextures(self):
         if self.reloadMappings:
             badTextures = []
@@ -158,14 +165,15 @@ class Window(Form, Base):
             if badTextures:
                 detail = 'Following paths do not exist:\n'
                 for i in range(len(badTextures)):
-                    detail += str(i+1) + "- " + badTextures[i] + "\n"
-                self.showMessage(msg = "The system can find the path specified",
-                            details = detail, icon = QMessageBox.Information)
+                    detail += str(i + 1) + "- " + badTextures[i] + "\n"
+                self.showMessage(msg="The system can find the path specified",
+                                 details=detail,
+                                 icon=QMessageBox.Information)
             self.refresh()
             self.messageLabel.setText('Done reloading textures...')
             self.messageLabel.show()
             self.messageLabel.repaint()
-            
+
     def reloadSingleBox(self, box, msg=True):
         badTextures = []
         path = str(box.text())
@@ -186,20 +194,24 @@ class Window(Form, Base):
                     self.setFile(node, fullPath)
                 else:
                     badTextures.append(fullPath)
-        else: badTextures.append(path)
+        else:
+            badTextures.append(path)
         if msg:
             if badTextures:
                 paths = '\n'.join(badTextures)
-                self.showMessage(msg='The system can not find the path specified\n'+ paths, icon=QMessageBox.Warning)
+                self.showMessage(
+                    msg='The system can not find the path specified\n' + paths,
+                    icon=QMessageBox.Warning)
             self.refresh()
             self.messageLabel.show()
         else:
             return badTextures
-        
+
     def checkUDIM(self, path, basename):
         if not osp.exists(path):
             return False
-        pattern = '^'+ basename.replace('<udim>', '\d+').replace('<UDIM>', '\d+') +'$'
+        pattern = '^' + basename.replace('<udim>', '\d+').replace(
+            '<UDIM>', '\d+') + '$'
         regex = QRegExp(pattern)
         flag = False
         for phile in os.listdir(path):
