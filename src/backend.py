@@ -122,7 +122,9 @@ class FileNode(Texture):
         super(FileNode, self).__init__(node)
 
     def setPath(self, path):
+        colorSpace = self.node.colorSpace.get()
         self.node.ftn.set(path.replace('\\', '/'))
+        self.node.colorSpace.set(colorSpace)
 
     def getPath(self):
         return osp.normpath(self.node.ftn.get())
